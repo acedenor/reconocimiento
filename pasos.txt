@@ -1,0 +1,11 @@
+usuario sube imagen
+JavaScript la toma y la envia a aws
+la función de aws envia la imagen al bucket
+luego se envia a rekognition
+la función devuelve el resultado en json
+JavaScript recibe la información y la coloca en la pagina web
+usuario guarda la información
+
+si desea usuario consulta la información
+
+

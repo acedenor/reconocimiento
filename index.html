@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reconocimiento, Análisis e Indexación de Imágenes</title>
+    <link rel="stylesheet" href="resources/css/estilos.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+</head>
+<body>
+<!-- Encabezado de la Universidad -->
+<header class="univ-header">
+    <div class="logo-container">
+        <img src="resources/img/logo2.png" alt="Logotipo de la Universidad" class="univ-logo">              
+</header>
+
+<div class="container">
+    <h2>Subir y visualizar la imagen.</h2>
+    
+    <!-- Input para seleccionar la imagen -->
+        <div class="upload-zone" onclick="document.getElementById('file-input').click()">
+        <p>📷 <strong>Haz clic aquí</strong> para cargar o arrastrar el archivo de imagen</p>
+        <input type="file" id="file-input" accept="image/*">
+    </div>
+
+    <!-- Área donde se renderizará el archivo subido -->
+    <div class="preview-container">
+        <span id="placeholder-text">Ninguna imagen seleccionada</span>
+        <img id="img-preview" alt="Vista previa del archivo cargado">
+    </div>
+    <button onclick="subirImagen()">Subir Imagen</button>
+</div>
+
+<!-- SECCIÓN 2: VERIFICACIÓN DE INFORMACIÓN EN BASE DE DATOS (Parte Posterior) -->
+<div class="container">
+
+    <!-- Tabla de existencias -->
+     
+    <div class="db-table-wrapper">
+        <table class="db-table">
+            <thead>
+                <tr>
+                    <th>Nombre persona</th>
+                    <th>Porcentaje confianza</th>
+                    <th>Fuente de referencia</th>                    
+                </tr>
+            </thead>
+            <tbody id="db-rows">
+                <!-- Registros base existentes -->
+                <tr>
+                    <td>#UN-9021</td>
+                    <td>2026-07-04 14:22</td>
+                    <td>muestra_laboratorio_01.png</td>                    
+                </tr>
+                <tr>
+                    <td>#UN-9022</td>
+                    <td>2026-07-05 09:15</td>
+                    <td>inventario_biblioteca.jpg</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+        <div class="contenedor-botones">
+        <button class="btn btn-guardar" id="btn-grabar">Guardar predicción</button>
+        <button class="btn btn-consultar" onclick="">Consultar</button>
+
+    </div>
+</div>
+<script>
+        	$( "#btn-grabar" ).click(function() { 
+    		
+    		$.post( "https://lm4u1rylv8.execute-api.us-east-2.amazonaws.com/test",JSON.stringify({imgvalidacion:picture}), function( respuesta ) {
+    			if(respuesta.body.codigo==0){
+					alert("Usted es :"+ respuesta.body.similutud);
+    		      }else{        
+  					alert("Error :"+ respuesta.body.descripcion);
+                }
+    		});
+     }); 
+</script>
+
+<!--<script src="resources/js/funcionalidad.js" type="text/javascript"></script>
+<script src="resources/js/grabar.js" type="text/javascript"></script>
+<script src="resources/js/predecir.js" type="text/javascript"></script>-->
+<script src="resources/js/predecir.js" type="text/javascript"></script>
+
+</body>
+</html> 
