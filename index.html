@@ -11,7 +11,7 @@
 <!-- Encabezado de la Universidad -->
 <header class="univ-header">
     <div class="logo-container">
-        <img src="resources/img/logo2.png" alt="Logotipo de la Universidad" class="univ-logo">              
+        <img src="resources/img/logo2.png" alt="Universidad" class="univ-logo">              
 </header>
 
 <div class="container">
@@ -28,13 +28,14 @@
         <span id="placeholder-text">Ninguna imagen seleccionada</span>
         <img id="img-preview" alt="Vista previa del archivo cargado">
     </div>
-    <button onclick="subirImagen()">Subir Imagen</button>
+    <button onclick="subirImagen()" class="btn btn-subir">Subir Imagen</button>
 </div>
 
 <!-- SECCIÓN 2: VERIFICACIÓN DE INFORMACIÓN EN BASE DE DATOS (Parte Posterior) -->
 <div class="container">
 
     <!-- Tabla de existencias -->
+    <a href="listado.html" class="back-button">Ver listado</a>
      
     <div class="db-table-wrapper">
         <table class="db-table">
@@ -61,28 +62,12 @@
         </table>
     </div>
         <div class="contenedor-botones">
-        <button class="btn btn-guardar" id="btn-grabar">Guardar predicción</button>
-        <button class="btn btn-consultar" onclick="">Consultar</button>
-
+        <button class="btn btn-guardar" id="btn-grabar">Guardar predicción</button>       
     </div>
 </div>
-<script>
-        	$( "#btn-grabar" ).click(function() { 
-    		
-    		$.post( "https://lm4u1rylv8.execute-api.us-east-2.amazonaws.com/test",JSON.stringify({imgvalidacion:picture}), function( respuesta ) {
-    			if(respuesta.body.codigo==0){
-					alert("Usted es :"+ respuesta.body.similutud);
-    		      }else{        
-  					alert("Error :"+ respuesta.body.descripcion);
-                }
-    		});
-     }); 
-</script>
-
-<!--<script src="resources/js/funcionalidad.js" type="text/javascript"></script>
-<script src="resources/js/grabar.js" type="text/javascript"></script>
-<script src="resources/js/predecir.js" type="text/javascript"></script>-->
+<script src="resources/js/funcionalidad.js" type="text/javascript"></script>
 <script src="resources/js/predecir.js" type="text/javascript"></script>
+<!--<script src="resources/js/grabar.js" type="text/javascript"></script>-->
 
 </body>
 </html> 

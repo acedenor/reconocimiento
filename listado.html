@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Listado</title>
+    <link rel="stylesheet" href="resources/css/estilos.css">
+</head>
+
+<body>
+    <!-- Encabezado de la Universidad -->
+    <header class="univ-header">
+        <div class="logo-container">
+            <img src="resources/img/logo2.png" alt="Universidad" class="univ-logo">
+    </header>
+
+    <div class="container">
+        <a href="index.html" class="back-button">← Volver a la página principal</a>
+    </div>
+    
+    <div class="container">
+        <h2>Listado de imagenes.</h2>    
+        <!-- Tabla donde se mostrarán los resultados -->
+        <table id="tabla-resultados" class="db-table">
+            <thead>
+                <tr>
+                    <th>Imagen</th>
+                    <th>Nombre persona</th>
+                    <th>Porcentaje confianza</th>
+                    <th>Fuente de referencia</th>
+                </tr>
+            </thead>
+            <tbody id="cuerpo-tabla">
+                <tr>
+                    <td colspan="4" class="loading">Cargando datos...</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</body>
+<script src="resources/js/consultar.js" type="text/javascript"></script>
+</html>
