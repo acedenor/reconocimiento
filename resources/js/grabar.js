@@ -1,3 +1,0 @@
-const grabar = function(){
-     
-}
