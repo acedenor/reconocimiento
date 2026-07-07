@@ -20,21 +20,21 @@
     </div>
     
     <div class="container">
-        <h2>Listado de imagenes.</h2>    
+        <h2>Historial de reconocimiento</h2>   
+        <div id="mensaje-carga" class="loading">Cargando registros desde la base de datos...</div> 
         <!-- Tabla donde se mostrarán los resultados -->
-        <table id="tabla-resultados" class="db-table">
+        <table id="tabla-resultados" class="db-table" style="display: none;">
             <thead>
                 <tr>
                     <th>Imagen</th>
                     <th>Nombre persona</th>
                     <th>Porcentaje confianza</th>
                     <th>Fuente de referencia</th>
+                    <th>Fecha</th>
                 </tr>
             </thead>
             <tbody id="cuerpo-tabla">
-                <tr>
-                    <td colspan="4" class="loading">Cargando datos...</td>
-                </tr>
+                
             </tbody>
         </table>
     </div>
