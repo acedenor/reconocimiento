@@ -114,6 +114,15 @@ async function ejecutarGuardadoEnDB() {
 
     if (respuesta.ok) {
       alert(`¡Se guardó con éxito! ${resultado.mensaje}`);
+      const inputArchivo = document.getElementById("file-input");
+      inputArchivo.value = "";
+      const vistaPrevia = document.getElementById("img-preview");
+      vistaPrevia.removeAttribute("src"); // Elimina la imagen previa
+      vistaPrevia.style.display = "none";
+      datosFamososTemporales = [];
+      nombreArchivoTemporal = '';
+      nombreBucketTemporal ='';
+      contenedorTabla.style.display = 'none;
     } else {
       alert(`No se pudo guardar la información. Motivo: ${resultado.error}`);
     }

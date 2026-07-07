@@ -1,11 +1,26 @@
 import json
 import boto3
+import uuid
 import base64
+import os
 from botocore.config import Config
 
 # Configuramos los clientes de AWS en la región de tu bucket (us-east-2)
 s3_client = boto3.client('s3', region_name='us-east-2', config=Config(signature_version='s3v4'))
 rekognition_client = boto3.client('rekognition', region_name='us-east-2')
+
+def generar_nombre_unico(nombre_original_archivo):
+    # 1. Separamos el nombre de la extensión (ej: 'foto.perfil.png' -> 'foto.perfil', '.png')
+    nombre_base, extension = os.path.splitext(nombre_original_archivo)
+    
+    # 2. Generamos un código UUID aleatorio único
+    codigo_unico = uuid.uuid4()
+    
+    # 3. Unimos el nuevo código con su extensión original (todo en minúsculas para estandarizar)
+    nuevo_nombre = f"{codigo_unico}{extension.lower()}"
+    
+    # Ejemplo de salida: "c9a646d3-9c61-4cd9-bc11-665544332211.png"
+    return nuevo_nombre
 
 def lambda_handler(event, context):
     # 1. Interceptar peticiones OPTIONS (CORS Preflight)
@@ -29,7 +44,8 @@ def lambda_handler(event, context):
         body_str = event.get('body', '{}')
         body = json.loads(body_str)
         
-        nombre_archivo = body.get('nombreArchivo', 'famoso.jpg')
+        nombre_original = body.get('nombreArchivo', 'famoso.jpg')
+        nombre_archivo = generar_nombre_unico(nombre_original)
         imagen_base64 = body.get('imagenBase64') # Cadena de texto base64
         
         if not imagen_base64:
@@ -73,8 +89,6 @@ def lambda_handler(event, context):
                 'urls': celebridad.get('Urls', [])
             })
 
-        print(f"Famosos encontrados: {famosos_detectados}")
-
         # 7. Retornar la respuesta JSON limpia hacia tu frontend
         return {
             'statusCode': 200,
@@ -84,7 +98,9 @@ def lambda_handler(event, context):
             },
             'body': json.dumps({
                 'mensaje': 'Imagen procesada exitosamente',
+                'nombreArchivo': nombre_archivo,
                 'famosos': famosos_detectados,
+                'bucket': nombre_bucket,
                 'rutaS3': f"s3://{nombre_bucket}/{key_archivo}"
             })
         }

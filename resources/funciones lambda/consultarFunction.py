@@ -50,6 +50,12 @@ def lambda_handler(event, context):
         logger.error(f"Error al consultar la base de datos: {str(e)}")
         return {
             'statusCode': 500,
-            'headers': {'Content-Type': 'application/json'},
-            'body': json.dumps({'error': 'No se pudieron obtener los registros'})
+            'headers': {
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*'  # <-- Crucial añadirlo aquí también
+            },
+            'body': json.dumps({
+                'error': 'No se pudieron obtener los registros',
+                'detalle': str(e) # Te ayudará a ver el error real en la consola de JS
+            })
         }
