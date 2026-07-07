@@ -1,91 +1,58 @@
 import json
-import boto3
+import logging
+import psycopg2
 import os
+import sys 
 
-# Inicializamos el cliente de la API de Datos de RDS en la región de tu infraestructura
-rds_client = boto3.client('rds-data', region_name='us-east-2')
+user = os.environ['USER_NAME']
+clave = os.environ['PASSWORD']
+host = os.environ['RDS_HOST']
+db = os.environ['DB_NAME']
 
-# Reemplaza estos valores por los ARNs correspondientes de tu clúster de Aurora y Secrets Manager
-CLUSTER_ARN = "arn:aws:rds:us-east-2:097279985795:cluster:tu-cluster-aurora"
-SECRET_ARN = "arn:aws:secretsmanager:us-east-2:097279985795:secret:tu-secreto-credenciales"
-DB_NAME = "nombre_de_tu_base_de_datos"
-
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
 def lambda_handler(event, context):
-    # Control manual de CORS Preflight
-    request_context = event.get('requestContext', {})
-    if request_context.get('http', {}).get('method', '') == 'OPTIONS':
-        return {
-            'statusCode': 200,
-            'headers': {
-                'Access-Control-Allow-Origin': 'http://127.0.0.1:5500',
-                'Access-Control-Allow-Headers': 'Content-Type',
-                'Access-Control-Allow-Methods': 'POST, OPTIONS',
-                'Content-Type': 'application/json'
-            },
-            'body': json.dumps('CORS OK')
-        }
-
     try:
-        body = json.loads(event.get('body', '{}'))
-        nombre_archivo = body.get('nombreArchivo', 'desconocido.jpg')
+        body = json.loads(event['body'])         
         lista_famosos = body.get('famosos', [])
+        imagen = body.get('imagen')
+        logger.info(f'Imagen {imagen}')
+        logger.info(f'Famosos {lista_famosos}')
+        nombre_archivo = "imagenes/"+imagen
+        
+        with psycopg2.connect(
+            host=host,
+            database=db,
+            user=user,
+            password=clave
+        ) as conn:
+            with conn.cursor() as cursor:
+                filas_insertadas = 0                
+                sql_insert = """
+                INSERT INTO reconocimiento (nombre_imagen, nombre_famoso, porcentaje, fuente, fecha_registro)
+                VALUES (%s, %s, %s, %s, NOW());                
+                """
 
-        if not lista_famosos:
-            return {
-                'statusCode': 400,
-                'headers': {'Access-Control-Allow-Origin': 'http://127.0.0.1:5500'},
-                'body': json.dumps({'error': 'No se encontraron registros de famosos para procesar'})
-            }
-
-        # Consulta SQL parametrizada para evitar inyecciones
-        sql_insert = """
-            INSERT INTO reconocimiento (imagen, bucket, famoso, confianza, fecha)
-            VALUES (:nombre_archivo, :nombre_famoso, :confianza);
-        """
-
-        filas_insertadas = 0
-
-        # Iterar el arreglo enviado por JS e insertar cada registro individual en Aurora
-        for famoso in lista_famosos:
-            nombre_famoso = famoso.get('nombre')
-            confianza = famoso.get('confianza')
-
-            parametros = [
-                {'name': 'nombre_archivo', 'value': {'stringValue': nombre_archivo}},
-                {'name': 'nombre_famoso', 'value': {'stringValue': nombre_famoso}},
-                {'name': 'confianza', 'value': {'doubleValue': float(confianza)}}
-            ]
-
-            rds_client.execute_statement(
-                resourceArn=CLUSTER_ARN,
-                secretArn=SECRET_ARN,
-                database=DB_NAME,
-                sql=sql_insert,
-                parameters=parametros
-            )
-            filas_insertadas += 1
-
+                for f in lista_famosos:
+                    nombre_famoso = f.get('nombre')
+                    confianza = f.get('confianza')
+                    fuente = f.get('urls')
+                    flinks = retornaEnlace(fuente)
+                    valores = (imagen, nombre_famoso, float(confianza), flinks)
+                    cursor.execute(sql_insert, valores)
+                    filas_insertadas += 1
         return {
             'statusCode': 200,
             'headers': {
-                'Access-Control-Allow-Origin': 'http://127.0.0.1:5500',
                 'Content-Type': 'application/json'
             },
             'body': json.dumps({
                 'mensaje': f'Se almacenaron con éxito {filas_insertadas} celebridades en la base de datos.'
             })
-        }
-
+        }    
     except Exception as e:
-        print(f"Error crítico en DB: {str(e)}")
-        return {
-            'statusCode': 500,
-            'headers': {
-                'Access-Control-Allow-Origin': 'http://127.0.0.1:5500',
-                'Content-Type': 'application/json'
-            },
-            'body': json.dumps({
-                'error': 'Error interno al intentar guardar los datos',
-                'detalle': str(e)
-            })
-        }
+        logger.error("No se ha podido conectar a la base de datos")
+        print(e)
+        sys.exit(1)
+def retornaEnlace(enlace):
+    return " | ".join([f'<a href="https://{url.strip()}" target="_blank">Enlace</a>' for url in enlace if url])

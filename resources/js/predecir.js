@@ -1,6 +1,7 @@
 let datosFamososTemporales = [];
 let nombreArchivoTemporal = "";
 let nombreBucketTemporal = "";
+let referencia = "";
 async function subirImagen() {
   const input = document.getElementById('file-input');
   const contenedorTabla = document.getElementById('contenedorTabla');
@@ -56,13 +57,15 @@ async function subirImagen() {
       if(datos.famosos && datos.famosos.length > 0) {
         datosFamososTemporales = datos.famosos;
         nombreBucketTemporal = datos.bucket;
+        nombreArchivoTemporal = datos.nombreArchivo;
 
         datos.famosos.forEach(famoso => {
           const fila = document.createElement('tr');
           // Crear enlaces para los URLs de información (ej. IMDB, Wikipedia)
           const enlaces = famoso.urls.length > 0
             ? famoso.urls.map(url => `<a href="https://${url}" target="_blank">Enlace</a>`).join(' | ')
-            : 'No disponible';
+            : 'No disponible'; 
+          referencia = enlaces;         
           fila.innerHTML = `
             <td style="padding: 10px; font-weight: bold;">${famoso.nombre}</td>
             <td style="padding: 10px;">${famoso.confianza}%</td>
@@ -95,7 +98,8 @@ async function ejecutarGuardadoEnDB() {
   try {
     btnGuardarDB.disabled = true;
     btnGuardarDB.innerText = "Guardando...";
-
+    console.log('Imagen: ', nombreArchivoTemporal);
+    console.log('Famosos: ', datosFamososTemporales);
     const respuesta = await fetch(urlLambdaDB, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
