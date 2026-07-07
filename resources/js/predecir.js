@@ -122,7 +122,7 @@ async function ejecutarGuardadoEnDB() {
       datosFamososTemporales = [];
       nombreArchivoTemporal = '';
       nombreBucketTemporal ='';
-      contenedorTabla.style.display = 'none;
+      contenedorTabla.style.display = 'none';
     } else {
       alert(`No se pudo guardar la información. Motivo: ${resultado.error}`);
     }
